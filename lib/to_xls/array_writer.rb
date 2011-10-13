@@ -71,7 +71,10 @@ module ToXls
           @array.keys
         end
       
-      keys.sort_by {|sym| @options[:humanize_columns] ? sym.to_s.humanize : sym.to_s}.collect.to_a
+      cols = keys.sort_by {|sym| sym.to_s}.collect.to_a
+      cols.map! {|k| k.humanize} if @options[:humanize_columns]
+      
+      cols 
     end
 
     def headers
