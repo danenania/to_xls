@@ -55,13 +55,23 @@ module ToXls
 
     def can_get_columns_from_first_element?
       @array.first && 
-      @array.first.respond_to?(:attributes) &&
+      (@array.first.respond_to?(:attributes) &&
       @array.first.attributes.respond_to?(:keys) &&
-      @array.first.attributes.keys.is_a?(Array)
+      @array.first.attributes.keys.is_a?(Array)) or
+      (@array.first.respond_to?(:keys) &&
+       @array.first.keys.is_a?(Array))
     end
 
     def get_columns_from_first_element
-      @array.first.attributes.keys.sort_by {|sym| sym.to_s}.collect.to_a
+      
+      keys =
+        if @array.first.respond_to?(:attributes)
+          @array.first.attributes.keys
+        elsif @array.first.respond_to?(:keys)  
+          @array.keys
+        end
+      
+      keys.sort_by {|sym| @options[:humanize_columns] ? sym.to_s.humanize : sym.to_s}.collect.to_a
     end
 
     def headers
@@ -77,14 +87,18 @@ module ToXls
 
 private
 
-    def fill_row(row, column, model=nil)
+    def fill_row(row, column, row_data=nil)
       case column
       when String, Symbol
-        row.push(model ? model.send(column) : column)
+        if row_data.class == Hash
+          row.push(row_data ? row_data[column] : column)
+        else  
+          row.push(row_data ? row_data.send(column) : column)
+        end 
       when Hash
-        column.each{|key, values| fill_row(row, values, model && model.send(key))}
+        column.each{|key, values| fill_row(row, values, row_data && row_data.send(key))}
       when Array
-        column.each{|value| fill_row(row, value, model)}
+        column.each{|value| fill_row(row, value, row_data)}
       else
         raise ArgumentError, "column #{column} has an invalid class (#{ column.class })"
       end
