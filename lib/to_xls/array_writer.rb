@@ -93,13 +93,13 @@ private
     def fill_row(row, column, row_data=nil)
       case column
       when String, Symbol
-        if row_data.class == Hash
-          row.push(row_data ? row_data[column] : column)
+        if row_data and row_data.class == Hash
+          row.push(row_data[column])
         else  
           row.push(row_data ? row_data.send(column) : column)
         end 
       when Hash
-        column.each{|key, values| fill_row(row, values, row_data && row_data.send(key))}
+        column.each{|key, values| fill_row(row, values, row_data && (row_data.class == Hash ? row_data[key] : row_data.send(key)) )}
       when Array
         column.each{|value| fill_row(row, value, row_data)}
       else
