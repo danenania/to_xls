@@ -78,7 +78,9 @@ module ToXls
       return  @headers if @headers
       @headers = @options[:headers] || columns
       raise ArgumentError, ":headers (#{@headers.inspect}) must be an array" unless @headers.is_a? Array
-      @headers = @headers.map {|c| c.to_s.humanize} if @options[:humanize_headers]
+      if @options[:humanize_headers]
+        @headers = @headers.map {|c| c.to_s.humanize}
+      end
       @headers
     end
 
