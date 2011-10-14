@@ -71,17 +71,14 @@ module ToXls
           @array.keys
         end
       
-      cols = keys.sort_by {|sym| sym.to_s}.collect.to_a
-      cols.map! {|k| k.humanize} if @options[:humanize_columns]
-      
-      cols 
+      keys.sort_by {|sym| sym.to_s}.collect.to_a
     end
 
     def headers
       return  @headers if @headers
       @headers = @options[:headers] || columns
       raise ArgumentError, ":headers (#{@headers.inspect}) must be an array" unless @headers.is_a? Array
-      @headers
+      @headers.map! {|c| c.to_s.humanize} if @options[:humanize_headers]
     end
 
     def headers_should_be_included?
