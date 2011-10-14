@@ -68,7 +68,7 @@ module ToXls
         if @array.first.respond_to?(:attributes)
           @array.first.attributes.keys
         elsif @array.first.respond_to?(:keys)  
-          @array.keys
+          @array.first.keys
         end
       
       keys.sort_by {|sym| sym.to_s}.collect.to_a
