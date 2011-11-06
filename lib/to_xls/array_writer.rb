@@ -94,12 +94,12 @@ private
       case column
       when String, Symbol
         if row_data and row_data.class == Hash
-          row.push(row_data[column])
+          row.push(row_data[column] or "")
         else  
-          row.push(row_data ? row_data.send(column) : column)
+          row.push(row_data ? row_data.send(column) or "" : column)
         end 
       when Hash
-        column.each{|key, values| fill_row(row, values, row_data && (row_data.class == Hash ? row_data[key] : row_data.send(key)) )}
+        column.each{|key, values| fill_row(row, values, row_data && (row_data.class == Hash ? row_data[key] or "" : row_data.send(key) or "") )}
       when Array
         column.each{|value| fill_row(row, value, row_data)}
       else
